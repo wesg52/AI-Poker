@@ -17,7 +17,7 @@ def NBClassfier(X, Y):
     Returns the naive bayes classfier w."""
     pass
 
-def self_play(w1, w2, w3):
+def self_play(w1, w2, w3, n):
     """Plays the game against it self for n times
     Returns X the n*m input matrix and Y the n * 1 labels."""
     pass 
