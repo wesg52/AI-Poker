@@ -5,7 +5,7 @@ def vectorize(card):
     pass
 
 def action(w1, w2, w3, x):
-    """w1, w2, w3... : weights that determine the action
+    """w1, w2, w3... : linear classifiers that determine the action
     x: vector representing the hand.
     Returns the action to be made by the agent in the current round."""
     ##if np.dot(w, x) > 0 then ...
