@@ -4,7 +4,7 @@ def vectorize(card):
     """Returns the vector representing the card"""
     pass
 
-def classifier(w1, w2, w3, x):
+def action(w1, w2, w3, x):
     """w1, w2, w3... : weights that determine the action
     x: vector representing the hand.
     Returns the action to be made by the agent in the current round."""
