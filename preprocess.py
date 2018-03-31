@@ -49,7 +49,7 @@ def generate_hold_card_win_prob(compressed_dict, n_sims=100, n_players=2):
 
 
 if __name__ == "__main__":
-    NUM_SIMULATIONS = 10
+    NUM_SIMULATIONS = 10000
     NUM_PLAYERS = 2
 
     compressed_dict = build_compressed_dict()
