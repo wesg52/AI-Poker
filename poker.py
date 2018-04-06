@@ -17,7 +17,14 @@ def NBClassfier(X, Y):
     Returns the naive bayes classfier w."""
     pass
 
-def self_play(w1, w2, w3):
+def self_play(w1, w2, w3, n):
     """Plays the game against it self for n times
     Returns X the n*m input matrix and Y the n * 1 labels."""
     pass 
+
+if __name__ == '__main__':
+    m = 52
+    w = np.zeros(m)
+    for i in 10:
+        X, Y = self_play(w, w, w, 10**i)
+        w = NBClassfier(X, Y)
