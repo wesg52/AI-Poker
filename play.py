@@ -1,7 +1,8 @@
 from console_player import ConsolePlayer
 from pypokerengine.api.game import setup_config, start_poker
 
-from honest_player import HonestPlayer #TODO Update with our bot
+from honest_player import HonestPlayer
+from bot import NaiveBot
 
 #Game Parameters
 MAX_ROUND = 3
@@ -14,6 +15,6 @@ if __name__ == "__main__":
                           initial_stack=INITIAL_STACK,
                           small_blind_amount=SMALL_BLIND_AMOUNT)
 
-    config.register_player(name="AI_player", algorithm=HonestPlayer())
+    config.register_player(name="bot", algorithm=NaiveBot('bot'))
     config.register_player(name="human_player", algorithm=ConsolePlayer())
     game_result = start_poker(config, verbose=0)  # verbose=0 because game progress is visualized by ConsolePlayer
