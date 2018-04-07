@@ -11,7 +11,7 @@ def vectorize(hole, community):
     cards = hole
     for i in n:
         v[i][14*(cards[i].suit - 1) + cards[i].rank] += 1
-    return v
+    return v.flatten()
 
 def action(w1, w2, w3, x):
     """w1, w2, w3... : linear classifiers that determine the action
