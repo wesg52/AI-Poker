@@ -17,10 +17,14 @@ def NBClassfier(X, Y):
     pass
 
 def data():
+    """
+    Plays the game with 2-9 players using NaiveBot. 
+    Returns: lists of data matrices. e.g. X_l[0], Y_l[0] represents the input and output matrices for the flop.
+    """ 
     player_names = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9"]
     player_ids = ["id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9"]
     emuluator = Emulator()
-    num = np.random.randint(10)
+    num = np.random.randint(2, 10)
     emulator.set_game_rule(nb_player, final_round, sb_amount, ante)
     emulator.set_game_rule(player_num=num, max_round=10, small_blind_amount=5, ante_amount=1)
     config = setup_config(max_round=10, initial_stack=100, small_blind_amount=5)
@@ -31,9 +35,9 @@ def data():
     initial_state = emulator.generate_initial_game_state(players_info)
     game_state, events = emulator.start_new_round(initial_state)
     street = game_state["street"]
+    X_l = []
+    Y_l = []
     while game_state["street"] != Const.Street.FINISHED:
-        X_l = []
-        Y_l = []
         while game_state["street"] == street:
             game_state, _ = emulator.run_until_round_finish(game_state)
             street = game_state["street"]
@@ -45,5 +49,5 @@ def data():
             X[p] = NaiveBot("").get_input_vector(game_state, cards)
         X_l.append(X)
         Y_l.append(Y)
-    return X, Y
+    return X_l, Y_l
 
