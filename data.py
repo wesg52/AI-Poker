@@ -27,7 +27,7 @@ def data():
     players_info = {}
     for p in num:
         players_info.update(player_ids[p], {"name": player_names[p], "stack": 100})
-        config.register_player(name=player_names[p], algorithm=NaiveBot())
+        config.register_player(name=player_names[p], algorithm=NaiveBot(""))
     initial_state = emulator.generate_initial_game_state(players_info)
     game_state, events = emulator.start_new_round(initial_state)
     game_state, _ = emulator.run_until_game_finish(game_state)
