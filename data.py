@@ -30,13 +30,20 @@ def data():
         config.register_player(name=player_names[p], algorithm=NaiveBot(""))
     initial_state = emulator.generate_initial_game_state(players_info)
     game_state, events = emulator.start_new_round(initial_state)
-    game_state, _ = emulator.run_until_game_finish(game_state)
-    X = np.zeros(num, 112)
-    Y = np.zeros(num, 3)
-    players = game_state["table"].seats.players
-    for p in num:
-       player = players.get(player_names[p])
-       cards = player.hole_card
-       X[p] = NaiveBot("").get_input_vector(game_state, cards)
+    street = game_state["street"]
+    while game_state["street"] != Const.Street.FINISHED:
+        X_l = []
+        Y_l = []
+        while game_state["street"] == street:
+            game_state, _ = emulator.run_until_round_finish(game_state)
+            street = game_state["street"]
+        X = np.zeros(num, 112)
+        Y = np.zeros(num, 3)
+        players = game_state["table"].seats.players
+        for p in num:
+            cards = players[p].hole_card
+            X[p] = NaiveBot("").get_input_vector(game_state, cards)
+        X_l.append(X)
+        Y_l.append(Y)
     return X, Y
 
