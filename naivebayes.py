@@ -1,6 +1,8 @@
 """
 P(y|x) \propto P(x|y)P(y)
 With Laplace smoothing
+
+Assumes binary features. Will update this to accomodate continuous variables later. 
 """
 
 def PY(x,y):
