@@ -50,13 +50,6 @@ def classifier(x,y):
     b = np.log(PYpos) - np.log(PYneg)
     return w, b
 
-def sign(w, xi):
-    if np.inner(w, xi) > 0:
-        output = 1
-    else:
-        output = -1
-    return output
-
 def pred(x,w,b=0):
     """
     Returns predictions for the test data.
@@ -66,7 +59,7 @@ def pred(x,w,b=0):
         x = np.column_stack((x, np.ones(x.shape[0])))
         w = np.append(w, [b])
     if x.ndim == 1:
-        preds = sign(w, x)
+        preds = np.sign(np.dot(w, x))
     else:
-        preds = np.apply_along_axis(lambda xi: sign(w, xi), 1, x)
+        preds = np.apply_along_axis(lambda xi: np.sign(np.dot(w, x)), 1, x)
     return preds
