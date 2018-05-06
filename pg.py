@@ -1,6 +1,7 @@
 import numpy as np
+import pickle
 
-def reward(inpt, out):
+def simple_reward(inpt, out):
     inp = np.squeeze(inpt)
     if inp[1] == 1.:
         if out == 1:
@@ -13,14 +14,27 @@ def reward(inpt, out):
         else:
             return 1.
 
+def xor_reward(inpt, out):
+    inp = np.squeeze(inpt)
+    if (inp[0] == 1)  ^ (inp[1] == 1) and inp[3] == 0: #1 = a xor b and not d
+        if out == 0:
+            return 1
+    if (inp[0] == 1)  ^ (inp[1] == 1) and inp[3] == 1: #2 = a xor b and d
+        if out == 1:
+            return 1
+    if (not (inp[0] == 1)  ^ (inp[1] == 1)): #3 = not (a xor b)
+        if out == 2:
+            return 1
+    return -1
+
 
 class Network(object):
     def __init__(self):
         # initialize parameters randomly
         self.h1 = 8 # size of hidden layer1
         self.h2 = 4 #size of hidden layer2
-        self.D = 3 #data dimension
-        self.K = 2 #num classes
+        self.D = 4 #data dimension
+        self.K = 3 #num classes
         self.W = np.random.randn(self.D,self.h1)
         self.b = np.zeros((1,self.h1))
         self.W2 =np.random.randn(self.h1,self.h2)
@@ -43,7 +57,7 @@ class Network(object):
         hidden2_out = np.dot(hidden_layer1, self.W2) + self.b2
         hidden_layer2 = np.maximum(alpha*hidden2_out, hidden2_out) #Leaky ReLU activation
         scores = np.dot(hidden_layer2, self.W3) + self.b3
-        print(scores)
+        #print(scores)
         # compute the class probabilities
         exp_scores = np.exp(scores)
         probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True) # [N x K]
@@ -62,8 +76,8 @@ class Network(object):
         dscores /= num_examples
 
         # backpropate the gradient to the parameters
-        print('Prob: ', probs)
-        print('Dscore: ', dscores)
+        #print('Prob: ', probs)
+        #print('Dscore: ', dscores)
         dW3 = np.dot(hidden_layer2.T, dscores)
         db3 = np.sum(dscores, axis=0, keepdims=True)
 
@@ -103,9 +117,12 @@ class Network(object):
         #print('OLD:  ',  old_W)
         #print('NEW:  ', self.W)
 
+    def save_network(self, save_name):
+        pickle.dump(self, open(save_name, 'wb'))
+
 
 def gen_data(Network,i):
-    X = np.random.choice([0., 1.], size=(1,3))
+    X = np.random.choice([0., 1.], size=(1,4))
     hidden1_out = np.dot(X, Network.W) + Network.b
     hidden_layer1 = np.maximum(Network.alpha*hidden1_out, hidden1_out) # Leaky ReLU activation
     hidden2_out = np.dot(hidden_layer1, Network.W2) + Network.b2
@@ -116,25 +133,29 @@ def gen_data(Network,i):
     exp_scores = np.exp(scores)
     probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True) # [N x K]
     y = np.argmax(np.random.multinomial(1, np.squeeze(probs)))
-    r = reward(X, y)
+    r = xor_reward(X, y)
     #print(X, y, r)
     Network.update_weights(X, y, r, i)
-    return r
+    return r, X, y
 
 def train(Network):
     reward = 0
     for i in range(10000):
         reward = gen_data(Network,i )
-    print(reward)
+    Network.save_network('test.p')
 
 def test(Network):
     reward = 0
     for i in range(1000):
-        reward += gen_data(Network,i)
+        r, X, y = gen_data(Network,i)
+        reward += r
+        if r < 0:
+            print('Input: ', X)
+            print('Output:', y)
     print(reward)
 
 if __name__ == '__main__':
     NeuralNet = Network()
-    b_bef = NeuralNet.b
     train(NeuralNet)
-    test(NeuralNet)
+    test_net = pickle.load(open('test.p', 'rb'))
+    test(test_net)
