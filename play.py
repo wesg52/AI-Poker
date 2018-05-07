@@ -9,7 +9,7 @@ import pickle
 MAX_ROUND = 5
 INITIAL_STACK = 100
 SMALL_BLIND_AMOUNT = 5
-BOT_POLICY = 'saved_models/first_test/policy_net_after9900'
+BOT_POLICY = 'saved_models/first_test/policy_net_after69980'
 
 
 if __name__ == "__main__":

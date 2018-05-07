@@ -60,7 +60,7 @@ class PGBot(BasePokerPlayer):
         elif action == 1: #if call
             return call_info['action'], call_info['amount'] #Call/Check
         else:
-            if action != 6: #if not All in
+            if action != 5: #if not All in
                 mult = action - 1
                 amnt = min(raise_info['amount']['max'], raise_info['amount']['min']*mult)
                 return raise_info['action'], amnt #Raise
@@ -108,10 +108,20 @@ class PGBot(BasePokerPlayer):
         pass
 
     def receive_round_result_message(self, winners, hand_info, round_state):
-        reward = self.get_stack(winners) - self.stack
+        cur_stack = self.get_stack(winners)
+        if cur_stack == 0:
+            reward = -100
+            print('lost early')
+        else:
+            reward = cur_stack - self.stack
         input_data = np.asarray(self.round_state_vecs)
+        print(input_data.shape)
         input_labels = np.asarray(self.round_actions)
-        self.network.update_weights(input_data, input_labels, reward)
+        print(input_labels.shape)
+        if len(input_data) > 0:
+            self.network.update_weights(input_data, input_labels, reward)
+            self.round_state_vecs = []
+            self.round_actions = []
 
     def init_vec(self, hole_cards, round_count):
         hole_card_obj = gen_cards(hole_cards)

@@ -22,16 +22,16 @@ class Network(object):
         self.h1 = 64 # size of hidden layer1
         self.h2 = 32 #size of hidden layer2
         self.D = 112 #data dimension
-        self.K = 7 #num classes
-        self.W = np.random.randn(self.D,self.h1)
+        self.K = 6 #num classes
+        self.W = .1*np.random.randn(self.D,self.h1)
         self.b = np.zeros((1,self.h1))
-        self.W2 =np.random.randn(self.h1,self.h2)
+        self.W2 = .1*np.random.randn(self.h1,self.h2)
         self.b2 = np.zeros((1,self.h2))
-        self.W3= np.random.randn(self.h2, self.K)
+        self.W3= .1*np.random.randn(self.h2, self.K)
         self.b3= np.zeros((1,self.K))
         # some hyperparameters
-        self.step_size = .0001
-        self.reg = 1e-2 # regularization strength
+        self.step_size = .00001
+        self.reg = 1e-3 # regularization strength
         self.alpha = .1 #Leaky RELU  parameter
 
     def save_network(self, save_name):
