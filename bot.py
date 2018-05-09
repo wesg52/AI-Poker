@@ -110,20 +110,18 @@ class PGBot(BasePokerPlayer):
     def receive_round_result_message(self, winners, hand_info, round_state):
         cur_stack = self.get_stack(winners)
         if cur_stack == 0:
-            reward = -100
-            print('lost early')
+            reward = -100 + (cur_stack - self.stack)
         else:
-            reward = cur_stack - self.stack
+            reward = (cur_stack - self.stack) + min(round_state['round_count'],3)
         input_data = np.asarray(self.round_state_vecs)
-        print(input_data.shape)
         input_labels = np.asarray(self.round_actions)
-        print(input_labels.shape)
         if len(input_data) > 0:
             self.network.update_weights(input_data, input_labels, reward)
             self.round_state_vecs = []
             self.round_actions = []
 
     def init_vec(self, hole_cards, round_count):
+        #print(hole_cards)
         hole_card_obj = gen_cards(hole_cards)
         self.hole_card_obj = hole_card_obj
         c1 = hole_card_obj[0]

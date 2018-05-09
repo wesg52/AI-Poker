@@ -8,10 +8,10 @@ from pypokerengine.api.game import setup_config, start_poker
 #Training hyperparameters
 N_GAMES = 10000
 N_ROUNDS_PER_GAME = 20
-SAVE_PATH = 'saved_models/first_test/policy_net_after'
+SAVE_PATH = 'saved_models/second_test/policy_net_after'
 
 #Game Parameters
-MAX_ROUND = 3
+MAX_ROUND = 10
 INITIAL_STACK = 100
 SMALL_BLIND_AMOUNT = 5
 
@@ -31,7 +31,7 @@ for i in range(N_GAMES):
     config.register_player(name="bot_p1", algorithm=bot1)
     config.register_player(name="bot_p2", algorithm=bot2)
     game_result = start_poker(config, verbose=0)
-    if ((i+1)%100 == 0):
-        model_save =  SAVE_PATH + str(i * N_ROUNDS_PER_GAME)
-        print('Games played:', str(i * N_ROUNDS_PER_GAME))
+    if ((i+1)%10000 == 0):
+        model_save =  SAVE_PATH + str((i + 1) * N_ROUNDS_PER_GAME)
+        print('Games played:', str((i + 1) * N_ROUNDS_PER_GAME))
         policy1.save_network(model_save)

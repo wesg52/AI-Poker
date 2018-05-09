@@ -19,16 +19,20 @@ def learning_rate_scheduler(num_games):
 class Network(object):
     def __init__(self):
         """NN initialization, set architecture hyperparameters here."""
-        self.h1 = 64 # size of hidden layer1
-        self.h2 = 32 #size of hidden layer2
+        self.h1 = 128 # size of hidden layer1
+        self.h2 = 64 #size of hidden layer2
+        self.h3 = 32 #size of hidden layer 3
         self.D = 112 #data dimension
         self.K = 6 #num classes
         self.W = .1*np.random.randn(self.D,self.h1)
         self.b = np.zeros((1,self.h1))
         self.W2 = .1*np.random.randn(self.h1,self.h2)
         self.b2 = np.zeros((1,self.h2))
-        self.W3= .1*np.random.randn(self.h2, self.K)
-        self.b3= np.zeros((1,self.K))
+        self.W3= .1*np.random.randn(self.h2, self.h3)
+        self.b3= np.zeros((1,self.h3))
+        self.W4 = .1*np.random.randn(self.h3, self.K)
+        self.b4= np.zeros((1,self.K))
+
         # some hyperparameters
         self.step_size = .00001
         self.reg = 1e-3 # regularization strength
@@ -41,11 +45,14 @@ class Network(object):
         """Use network weights to compute a probabililty distribution over actions
          based on the game state given by the input_vec.
          See bot.py for more details on the input_vec."""
+        alpha = self.alpha
         hidden1_out = np.dot(input_vec, self.W) + self.b
-        hidden_layer1 = np.maximum(self.alpha*hidden1_out, hidden1_out) # Leaky ReLU activation
+        hidden_layer1 = np.maximum(alpha*hidden1_out, hidden1_out) # Leaky ReLU activation
         hidden2_out = np.dot(hidden_layer1, self.W2) + self.b2
-        hidden_layer2 = np.maximum(self.alpha*hidden2_out, hidden2_out) #Leaky ReLU activation
-        scores = np.dot(hidden_layer2, self.W3) + self.b3
+        hidden_layer2 = np.maximum(alpha*hidden2_out, hidden2_out) #Leaky ReLU activation
+        hidden3_out = np.dot(hidden_layer2, self.W3) + self.b3
+        hidden_layer3 = np.maximum(alpha*hidden3_out, hidden3_out) #Leaky ReLU activation
+        scores = np.dot(hidden_layer3, self.W4) + self.b4
 
         # compute the class probabilities
         exp_scores = np.exp(scores)
@@ -63,11 +70,13 @@ class Network(object):
         hidden_layer1 = np.maximum(alpha*hidden1_out, hidden1_out) # Leaky ReLU activation
         hidden2_out = np.dot(hidden_layer1, self.W2) + self.b2
         hidden_layer2 = np.maximum(alpha*hidden2_out, hidden2_out) #Leaky ReLU activation
-        scores = np.dot(hidden_layer2, self.W3) + self.b3
+        hidden3_out = np.dot(hidden_layer2, self.W3) + self.b3
+        hidden_layer3 = np.maximum(alpha*hidden3_out, hidden3_out) #Leaky ReLU activation
+        scores = np.dot(hidden_layer3, self.W4) + self.b4
         # compute the class probabilities
         exp_scores = np.exp(scores)
         probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True) # [N x K]
-        print(probs)
+        #print(probs)
 
         # compute the loss: average cross-entropy loss and regularization
         #correct_logprobs = -np.log(probs[range(num_examples),y])
@@ -82,13 +91,22 @@ class Network(object):
         dscores /= num_examples
 
         # backpropate the gradient to the parameters
-        dW3 = np.dot(hidden_layer2.T, dscores)
-        db3 = np.sum(dscores, axis=0, keepdims=True)
+        dW4 = np.dot(hidden_layer3.T, dscores)
+        db4 = np.sum(dscores, axis=0, keepdims=True)
 
         # next backprop into hidden layer
-        dhidden2 = np.dot(dscores, self.W3.T)
+        dhidden3 = np.dot(dscores, self.W4.T)
+        # backprop the ReLU non-linearity
+        dhidden3[hidden_layer3 <= 0] = dhidden3[hidden_layer3 <= 0] * alpha
+
+        # backprop into parameters W2 and b2
+        dW3 = np.dot(hidden_layer2.T, dhidden3)
+        db3 = np.sum(dhidden3, axis=0, keepdims=True)
+
+        dhidden2 = np.dot(dhidden3, self.W3.T)
         # backprop the ReLU non-linearity
         dhidden2[hidden_layer2 <= 0] = dhidden2[hidden_layer2 <= 0] * alpha
+
 
         # backprop into parameters W2 and b2
         dW2 = np.dot(hidden_layer1.T, dhidden2)
@@ -104,6 +122,7 @@ class Network(object):
 
         # add regularization gradient contribution
         reg = self.reg
+        dW4 += reg * self.W4
         dW3 += reg * self.W3
         dW2 += reg * self.W2
         dW += reg * self.W
@@ -117,3 +136,5 @@ class Network(object):
         self.b2 += -step_size * db2 * reward
         self.W3 += -step_size * dW3 * reward
         self.b3 += -step_size * db3 * reward
+        self.W4 += -step_size * dW4 * reward
+        self.b4 += -step_size * db4 * reward
