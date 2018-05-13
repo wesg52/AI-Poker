@@ -39,7 +39,6 @@ if __name__ == '__main__':
                 game_state = attach_hole_card(game_state, player.uuid, hole_card)
             else:
                 game_state = attach_hole_card_from_deck(game_state, player.uuid)
-        game_state, events = emul.run_until_round_finish(game_state)
         while game_state["street"] != Const.Street.FINISHED:
             print(game_state["street"])
             cur_street = game_state["street"]
