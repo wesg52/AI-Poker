@@ -44,9 +44,14 @@ if __name__ == '__main__':
             print("community cards: ", events[0]["round_state"]["community_card"])
             cur_street = game_state["street"]
             print("valid actions: ", events[-1]['valid_actions'])
-            action = input("Enter a valid action > ")
-            amount = int(input("Enter a valid amount > "))
-            game_state, events = emul.apply_action(game_state, action, amount)
+            if events[0]['round_state']['next_player'] == 1:
+                action = input("Enter a valid action > ")
+                amount = int(input("Enter a valid amount > "))
+                game_state, events = emul.apply_action(game_state, action, amount)
+            else:
+                action, amount = bot.declare_action(events[-1]['valid_actions'], bot.hole_card_obj, events[0]['round_state'])
+                game_state, events = emul.apply_action(game_state, action, amount)
+            print("action hitories: ", events[0]["round_state"]['action_histories'])
             if game_state["street"] != cur_street:
                 if events[0]["round_state"]["street"] == "flop":
                     flop1 = input("Enter first flop > ")
