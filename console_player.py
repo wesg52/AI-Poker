@@ -13,6 +13,7 @@ class ConsolePlayer(BasePokerPlayer):
 
   def receive_game_start_message(self, game_info):
     print(U.visualize_game_start(game_info, self.uuid))
+
     self.__wait_until_input()
 
   def receive_round_start_message(self, round_count, hole_card, seats):
@@ -32,10 +33,10 @@ class ConsolePlayer(BasePokerPlayer):
     self.__wait_until_input()
 
   def __wait_until_input(self):
-    raw_input("Enter some key to continue ...")
+    input("Enter some key to continue ...")
 
   def __gen_raw_input_wrapper(self):
-    return lambda msg: raw_input(msg)
+    return lambda msg: input(msg)
 
   def __receive_action_from_console(self, valid_actions):
     flg = self.input_receiver('Enter f(fold), c(call), r(raise).\n >> ')
