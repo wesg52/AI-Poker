@@ -40,9 +40,10 @@ if __name__ == '__main__':
             else:
                 game_state = attach_hole_card_from_deck(game_state, player.uuid)
         while game_state["street"] != Const.Street.FINISHED:
-            print(game_state["street"])
+            print("action hitories: ", events[0]["round_state"]['action_histories'])
+            print("community cards: ", events[0]["round_state"]["community_card"])
             cur_street = game_state["street"]
-            print(events[-1]['valid_actions'])
+            print("valid actions: ", events[-1]['valid_actions'])
             action = input("Enter a valid action > ")
             amount = int(input("Enter a valid amount > "))
             game_state, events = emul.apply_action(game_state, action, amount)
