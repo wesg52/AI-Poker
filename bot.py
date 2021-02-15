@@ -38,6 +38,9 @@ class PGBot(BasePokerPlayer):
         self.round_actions = []
         self.network = policy
         self.stack = 100
+        
+    def add_hole_card(self, hole_card):
+        self.hole_card_obj = hole_card
 
     def declare_action(self, valid_actions, hole_card, round_state):
         """Main function for implementing the AI strategy. Currently very
@@ -121,9 +124,10 @@ class PGBot(BasePokerPlayer):
             self.round_actions = []
 
     def init_vec(self, hole_cards, round_count):
-        #print(hole_cards)
-        hole_card_obj = gen_cards(hole_cards)
-        self.hole_card_obj = hole_card_obj
+        if self.hole_card_obj == None:
+            hole_card_obj = gen_cards(hole_cards)
+            self.hole_card_obj = hole_card_obj
+        hole_card_obj = self.hole_card_obj
         c1 = hole_card_obj[0]
         c2 = hole_card_obj[1]
         hole_vec = cards_to_vec(hole_cards)
